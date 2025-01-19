@@ -1,3 +1,4 @@
+name: FocusMonitoring
 channels:
   - conda-forge
 dependencies:
