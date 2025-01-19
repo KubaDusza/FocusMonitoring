@@ -40,7 +40,7 @@ Follow these steps to set up the system locally:
     ```
 4. Run the app:
     ```bash
-    streamlit run app.py
+    streamlit run main.py
     ```
 
 ## How to Use 🤓
