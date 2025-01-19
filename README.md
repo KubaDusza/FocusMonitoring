@@ -20,28 +20,23 @@ A system for real-time head-pose estimation, focus tracking, and data visualizat
 ## Installation 🖥️
 Follow these steps to set up the system locally:
 
-1. Clone the repository:
+1. **Clone the repository**:
     ```bash
     git clone https://github.com/KubaDusza/FocusMonitoring.git
     cd FocusMonitoring
     ```
-2. Create a virtual environment and activate it:
-    - On MacOS/Linux:
-      ```bash
-      python3 -m venv venv && source venv/bin/activate
-      ```
-    - On Windows:
-      ```bash
-      python -m venv venv && venv\Scripts\activate
-      ```
-3. Install dependencies:
+
+2. **Create a `conda` environment and activate it**:
     ```bash
-    pip install -r requirements.txt
+    conda env create -f environment.yml
+    conda activate FocusMonitoring
     ```
-4. Run the app:
+
+3. **Run the app**:
     ```bash
     streamlit run main.py
     ```
+
 
 ## How to Use 🤓
 1. **Calibration:**
