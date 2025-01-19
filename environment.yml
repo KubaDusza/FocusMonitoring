@@ -7,4 +7,4 @@ dependencies:
   - opencv
   - streamlit
   - watchdog
-  - python=3.10  # Specify the Python version you're using
+  - python=3.12  # Specify the Python version you're using
