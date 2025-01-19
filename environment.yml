@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - dlib
+  - numpy
+  - scipy
+  - opencv
+  - streamlit
+  - watchdog
+  - python=3.10  # Specify the Python version you're using
