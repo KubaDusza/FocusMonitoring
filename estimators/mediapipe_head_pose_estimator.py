@@ -20,10 +20,16 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
         """Initialize MediaPipe Face Mesh."""
         self.mp_face_mesh = mp.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(
-            static_image_mode=False, max_num_faces=1, refine_landmarks=True
+            static_image_mode=False,
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5,
         )
         self.drawing_utils = mp.solutions.drawing_utils
-        self.drawing_spec = self.drawing_utils.DrawingSpec(color=(0, 255, 0), thickness=1, circle_radius=1)
+        self.drawing_spec = self.drawing_utils.DrawingSpec(
+            color=(0, 255, 0), thickness=1, circle_radius=1
+        )
 
     def estimate(self, frame: np.ndarray) -> dict:
         """
@@ -58,43 +64,71 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
     def _solve_head_pose(self, frame: np.ndarray) -> None:
         """SolvePnP to calculate head pose."""
         # Define 3D model points corresponding to the selected landmarks
-        model_points = np.array([
-            [0.0, 0.0, 0.0],  # Nose tip
-            [0.0, -330.0, -65.0],  # Chin
-            [-225.0, 170.0, -135.0],  # Left eye left corner
-            [225.0, 170.0, -135.0],  # Right eye right corner
-            [-150.0, -150.0, -125.0],  # Left Mouth corner
-            [150.0, -150.0, -125.0],  # Right Mouth corner
-            [-300.0, 0.0, -150.0],  # Left cheek
-            [300.0, 0.0, -150.0]  # Right cheek
-        ])
+        model_points = np.array(
+            [
+                [0.0, 0.0, 0.0],  # Nose tip
+                [0.0, -330.0, -65.0],  # Chin
+                [-225.0, 170.0, -135.0],  # Left eye left corner
+                [225.0, 170.0, -135.0],  # Right eye right corner
+                [-150.0, -150.0, -125.0],  # Left Mouth corner
+                [150.0, -150.0, -125.0],  # Right Mouth corner
+                [-300.0, 0.0, -150.0],  # Left cheek
+                [300.0, 0.0, -150.0],  # Right cheek
+            ]
+        )
 
         # Extract 2D coordinates of the corresponding landmarks
-        self.keypoints_2d = np.array([
-            (self.landmarks.landmark[1].x * frame.shape[1], self.landmarks.landmark[1].y * frame.shape[0]),  # Nose tip
-            (self.landmarks.landmark[152].x * frame.shape[1], self.landmarks.landmark[152].y * frame.shape[0]),  # Chin
-            (self.landmarks.landmark[33].x * frame.shape[1], self.landmarks.landmark[33].y * frame.shape[0]),
-            # Left eye left corner
-            (self.landmarks.landmark[263].x * frame.shape[1], self.landmarks.landmark[263].y * frame.shape[0]),
-            # Right eye right corner
-            (self.landmarks.landmark[61].x * frame.shape[1], self.landmarks.landmark[61].y * frame.shape[0]),
-            # Left Mouth corner
-            (self.landmarks.landmark[291].x * frame.shape[1], self.landmarks.landmark[291].y * frame.shape[0]),
-            # Right Mouth corner
-            (self.landmarks.landmark[234].x * frame.shape[1], self.landmarks.landmark[234].y * frame.shape[0]),
-            # Left cheek
-            (self.landmarks.landmark[454].x * frame.shape[1], self.landmarks.landmark[454].y * frame.shape[0])
-            # Right cheek
-        ], dtype="double")
+        self.keypoints_2d = np.array(
+            [
+                (
+                    self.landmarks.landmark[1].x * frame.shape[1],
+                    self.landmarks.landmark[1].y * frame.shape[0],
+                ),  # Nose tip
+                (
+                    self.landmarks.landmark[152].x * frame.shape[1],
+                    self.landmarks.landmark[152].y * frame.shape[0],
+                ),  # Chin
+                (
+                    self.landmarks.landmark[33].x * frame.shape[1],
+                    self.landmarks.landmark[33].y * frame.shape[0],
+                ),
+                # Left eye left corner
+                (
+                    self.landmarks.landmark[263].x * frame.shape[1],
+                    self.landmarks.landmark[263].y * frame.shape[0],
+                ),
+                # Right eye right corner
+                (
+                    self.landmarks.landmark[61].x * frame.shape[1],
+                    self.landmarks.landmark[61].y * frame.shape[0],
+                ),
+                # Left Mouth corner
+                (
+                    self.landmarks.landmark[291].x * frame.shape[1],
+                    self.landmarks.landmark[291].y * frame.shape[0],
+                ),
+                # Right Mouth corner
+                (
+                    self.landmarks.landmark[234].x * frame.shape[1],
+                    self.landmarks.landmark[234].y * frame.shape[0],
+                ),
+                # Left cheek
+                (
+                    self.landmarks.landmark[454].x * frame.shape[1],
+                    self.landmarks.landmark[454].y * frame.shape[0],
+                ),
+                # Right cheek
+            ],
+            dtype="double",
+        )
 
         # Camera internals
         focal_length = frame.shape[1]
         center = (frame.shape[1] / 2, frame.shape[0] / 2)
-        camera_matrix = np.array([
-            [focal_length, 0, center[0]],
-            [0, focal_length, center[1]],
-            [0, 0, 1]
-        ], dtype="double")
+        camera_matrix = np.array(
+            [[focal_length, 0, center[0]], [0, focal_length, center[1]], [0, 0, 1]],
+            dtype="double",
+        )
 
         # SolvePnP to estimate head pose
         success, self.rotation_vector, self.translation_vector = cv2.solvePnP(
@@ -112,42 +146,43 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
                 self.landmarks,
                 self.mp_face_mesh.FACEMESH_CONTOURS,
                 self.drawing_spec,
-                self.drawing_spec
+                self.drawing_spec,
             )
 
-            axis = np.float32([
-                [0, 0, 0], [100, 0, 0], [0, 100, 0], [0, 0, 100]
-            ])
+            axis = np.float32([[0, 0, 0], [100, 0, 0], [0, 100, 0], [0, 0, 100]])
 
-            camera_matrix = np.array([
-                [frame.shape[1], 0, frame.shape[1] / 2],
-                [0, frame.shape[1], frame.shape[0] / 2],
-                [0, 0, 1]
-            ], dtype="double")
-
-
+            camera_matrix = np.array(
+                [
+                    [frame.shape[1], 0, frame.shape[1] / 2],
+                    [0, frame.shape[1], frame.shape[0] / 2],
+                    [0, 0, 1],
+                ],
+                dtype="double",
+            )
 
             img_points, _ = cv2.projectPoints(
                 axis, self.rotation_vector, self.translation_vector, camera_matrix, None
             )
 
             origin = tuple(np.int32(img_points[0].ravel()))
-            frame = cv2.line(frame, origin, tuple(np.int32(img_points[1].ravel())), (0, 0, 255), 2)  # X-axis
-            frame = cv2.line(frame, origin, tuple(np.int32(img_points[2].ravel())), (0, 255, 0), 2)  # Y-axis
-            frame = cv2.line(frame, origin, tuple(np.int32(img_points[3].ravel())), (255, 0, 0), 2)  # Z-axis
+            frame = cv2.line(
+                frame, origin, tuple(np.int32(img_points[1].ravel())), (0, 0, 255), 2
+            )  # X-axis
+            frame = cv2.line(
+                frame, origin, tuple(np.int32(img_points[2].ravel())), (0, 255, 0), 2
+            )  # Y-axis
+            frame = cv2.line(
+                frame, origin, tuple(np.int32(img_points[3].ravel())), (255, 0, 0), 2
+            )  # Z-axis
 
         return frame
 
     def get_head_pose(self) -> dict:
         """Return rotation and translation vectors."""
         if self.rotation_vector is None:
-            return {
-                "rotation_vector": None,
-                "translation_vector": None
-            }
+            return {"rotation_vector": None, "translation_vector": None}
 
         return {
             "rotation_vector": self.rotation_vector.flatten(),
-            "translation_vector": self.translation_vector.flatten()
+            "translation_vector": self.translation_vector.flatten(),
         }
-

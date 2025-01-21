@@ -10,11 +10,11 @@ from observers.observer import Observer
 
 class GraphGenerator(Observer):
     def __init__(self, sliding_window_size=100):
-        self.time_series = []  # Unix timestamps
-        self.zone_series = []  # Binary adherence (1: in zone, 0: out of zone)
-        self.gaze_durations = []  # Durations of time spent in the zone
-        self.sliding_window = deque(maxlen=sliding_window_size)  # Sliding window buffer
-        self.sliding_window_percentages = []  # Zone adherence percentages in the window
+        self.time_series = []
+        self.zone_series = []
+        self.gaze_durations = []
+        self.sliding_window = deque(maxlen=sliding_window_size)
+        self.sliding_window_percentages = []
 
     def update(self, data):
         """
@@ -23,34 +23,30 @@ class GraphGenerator(Observer):
         current_time = time.time()
         is_in_zone = data.get("is_looking_within_zone", False)
 
-        # Add time and zone adherence
         self.time_series.append(current_time)
         self.zone_series.append(1 if is_in_zone else 0)
 
-        # Update gaze durations
         if is_in_zone:
-            if not self.gaze_durations or self.zone_series[-2] == 0:
-                # Start new gaze duration
+
+            if not self.gaze_durations or (
+                len(self.zone_series) >= 2 and self.zone_series[-2] == 0
+            ):
                 self.gaze_durations.append(1)
             else:
-                # Increment ongoing gaze duration
                 self.gaze_durations[-1] += 1
 
         # Update sliding window
         self.sliding_window.append(is_in_zone)
         self.sliding_window_percentages.append(np.mean(self.sliding_window) * 100)
 
-        # Update all graphs
-        #self.plot_time_spent()
-        #self.plot_zone_adherence()
-        #self.plot_average_gaze_duration()
-        #self.plot_sliding_window_adherence()
-
     def _format_time_series(self):
         """
         Convert Unix timestamps to human-readable time strings.
         """
-        return [datetime.datetime.fromtimestamp(ts).strftime("%H:%M:%S") for ts in self.time_series]
+        return [
+            datetime.datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+            for ts in self.time_series
+        ]
 
     def plot_all_graphs(self, placeholder=None):
         if placeholder:
@@ -69,14 +65,20 @@ class GraphGenerator(Observer):
         if len(self.time_series) < 5:
             return
 
-
-
         plt.figure(figsize=(6, 3))
-        percentages = np.cumsum(self.zone_series) / np.arange(1, len(self.zone_series) + 1) * 100
+        percentages = (
+            np.cumsum(self.zone_series) / np.arange(1, len(self.zone_series) + 1) * 100
+        )
         time_labels = self._format_time_series()
+
         plt.plot(self.time_series, percentages, label="Time Spent in Zone (%)")
         plt.xlabel("Time (HH:MM:SS)")
-        plt.xticks(self.time_series[::len(self.time_series) // 5], time_labels[::len(self.time_series) // 5])
+        plt.ylim(0, 100)
+
+        if len(self.time_series) >= 5:
+            step = max(len(self.time_series) // 5, 1)
+            plt.xticks(self.time_series[::step], time_labels[::step], rotation=45)
+
         plt.ylabel("Percentage (%)")
         plt.title("Cumulative Time Spent in Zone")
         plt.grid()
@@ -91,14 +93,22 @@ class GraphGenerator(Observer):
         """
         if not self.time_series:
             return
-
-
+        if len(self.time_series) < 2:
+            return
 
         plt.figure(figsize=(6, 3))
         time_labels = self._format_time_series()
-        plt.step(self.time_series, self.zone_series, where="post", label="Zone Adherence")
+
+        plt.step(
+            self.time_series, self.zone_series, where="post", label="Zone Adherence"
+        )
         plt.xlabel("Time (HH:MM:SS)")
-        plt.xticks(self.time_series[::len(self.time_series) // 5], time_labels[::len(self.time_series) // 5])
+        # ADDED: legend
+        plt.legend()  # ADDED
+
+        step = max(len(self.time_series) // 5, 1)
+        plt.xticks(self.time_series[::step], time_labels[::step], rotation=45)
+
         plt.ylabel("In Zone (1) / Out of Zone (0)")
         plt.title("Zone Adherence Over Time")
         plt.grid()
@@ -113,14 +123,21 @@ class GraphGenerator(Observer):
         """
         if not self.gaze_durations:
             return
+        if len(self.gaze_durations) < 1:
+            return
 
         plt.figure(figsize=(6, 3))
-        avg_gaze_durations = np.cumsum(self.gaze_durations) / np.arange(1, len(self.gaze_durations) + 1)
-        plt.plot(avg_gaze_durations, label="Average Gaze Duration (seconds)")
+        avg_gaze_durations = np.cumsum(self.gaze_durations) / np.arange(
+            1, len(self.gaze_durations) + 1
+        )
+
+        plt.plot(avg_gaze_durations, label="Avg Gaze Duration (s)")
         plt.xlabel("Number of Gaze Events")
-        plt.ylabel("Average Duration (seconds)")
+        plt.ylabel("Duration (s)")
         plt.title("Average Gaze Duration Over Time")
         plt.grid()
+
+        plt.legend()
         plt.savefig("average_gaze_duration.png")
         if placeholder:
             placeholder.pyplot(plt)
@@ -132,10 +149,16 @@ class GraphGenerator(Observer):
         """
         if not self.sliding_window_percentages:
             return
+        if len(self.sliding_window_percentages) < 1:
+            return
 
         plt.figure(figsize=(6, 3))
         plt.plot(self.sliding_window_percentages, label="Zone Adherence (%)")
         plt.xlabel("Sliding Window Events")
+
+        plt.ylim(0, 100)
+        plt.legend()
+
         plt.ylabel("Adherence Percentage (%)")
         plt.title("Zone Adherence Percentage (Sliding Window)")
         plt.grid()

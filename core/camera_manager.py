@@ -1,9 +1,10 @@
 import cv2
 
+
 class CameraManager:
     """A flexible camera manager to handle multiple cameras and video feeds."""
-    MAX_CAMERA_COUNT = 2  # Maximum number of cameras to scan for
 
+    MAX_CAMERA_COUNT = 2  # Maximum number of cameras to scan for
 
     def __init__(self, camera_index=0):
         self.camera_index = camera_index
@@ -17,16 +18,15 @@ class CameraManager:
                 raise RuntimeError(f"Failed to open camera index {self.camera_index}")
 
     def get_frame(self):
-        """Capture a frame and return it as RGB."""
         if self.cap and self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, (320, 240))
+                frame = cv2.flip(frame, 1)  # Flip around y-axis
                 return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             else:
                 raise RuntimeError("Failed to capture a frame.")
         raise RuntimeError("Camera is not started.")
-
-
 
     def stop_camera(self):
         """Stop the camera and release resources."""
@@ -43,6 +43,3 @@ class CameraManager:
     def switch_to_next_camera(self):
         """Switch between available cameras."""
         self.switch_camera((self.camera_index + 1) % self.MAX_CAMERA_COUNT)
-
-
-
