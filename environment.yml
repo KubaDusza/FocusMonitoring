@@ -2,7 +2,6 @@ name: FocusMonitoring
 channels:
   - conda-forge
 dependencies:
-  - dlib
   - numpy
   - scipy
   - opencv
