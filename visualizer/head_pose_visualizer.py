@@ -34,11 +34,6 @@ class HeadPoseVisualizer:
             zone_threshold: Threshold angle (in radians) for the cones.
             plot_placeholder: If provided, the figure will be plotted there (e.g., in Streamlit).
         """
-        # Apply visualization rotation
-
-        #print(plot_placeholder)
-        #if plot_placeholder is not None:
-        #    plot_placeholder.write((self.visualization_rotation, calibrated_rotation_matrix))
 
         calibrated_rotation_matrix = self.visualization_rotation @ calibrated_rotation_matrix
         recorded_directions = [self.visualization_rotation @ direction for direction in recorded_directions]
@@ -55,7 +50,6 @@ class HeadPoseVisualizer:
         # Set plot limits and labels
         self._set_plot_bounds(ax)
 
-        # Show the plot
         return fig
 
     def _draw_head(self, ax, rotation_matrix):

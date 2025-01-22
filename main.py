@@ -141,6 +141,7 @@ def main():
                         last_calibrated_matrix,
                         head_pose_manager.get_calibrated_recorded_directions(),
                         head_pose_manager.zone_threshold,
+                        plot_placeholder
                     )
                     plot_placeholder.pyplot(fig)
                     plt.close(fig)

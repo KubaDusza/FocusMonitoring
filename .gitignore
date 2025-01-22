@@ -1,2 +1,6 @@
 venv/
 test*
+sliding_window_adherence.png
+time_spent_in_zone.png
+zone_adherence_over_time.png
+average_gaze_duration.png
