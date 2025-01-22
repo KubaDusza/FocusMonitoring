@@ -21,7 +21,12 @@ class CameraManager:
         if self.cap and self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
-                frame = cv2.resize(frame, (320, 240))
+                scale_factor = 0.25
+                height, width = frame.shape[:2]
+                new_width = int(width * scale_factor)
+                new_height = int(height * scale_factor)
+
+                frame = cv2.resize(frame, (new_width, new_height))  # Downscale the frame
                 frame = cv2.flip(frame, 1)  # Flip around y-axis
                 return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             else:
