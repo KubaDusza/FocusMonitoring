@@ -54,7 +54,7 @@ def main():
     graph_generator: GraphGenerator = st.session_state.graph_generator
 
     FRAME_SKIP = 2
-    PLOT_SKIP = 5
+    PLOT_SKIP = 2
 
     enable_camera = st.toggle("Enable Camera", value=True)
     switch_camera = st.button("Switch Camera")
@@ -81,6 +81,10 @@ def main():
         last_calibrated_matrix = None
 
         while enable_camera:
+
+            if frame_count % FRAME_SKIP*PLOT_SKIP == 0:
+                frame_count = 0 # resetting the frame count
+
             frame_placeholder, plot_placeholder = placeholder.columns(2)
             heatmap_placeholder, graph_placeholder = data_placeholder.columns(2)
 
