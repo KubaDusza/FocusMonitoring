@@ -57,6 +57,7 @@ def main():
     PLOT_SKIP = 5
 
     enable_camera = st.toggle("Enable Camera", value=True)
+    switch_camera = st.button("Switch Camera")
     show_face_mesh = st.checkbox("Show Face Mesh Overlay", value=True)
     show_3d_visualization = st.checkbox("Show 3D Head Pose", value=True)
     calibrate_button = st.button("Calibrate Head Pose")
@@ -88,6 +89,11 @@ def main():
                 frame_count += 1
 
                 if frame_count % FRAME_SKIP == 0:
+
+                    if switch_camera:
+                        camera_manager.switch_to_next_camera()
+                        switch_camera = False
+
                     calibrated_matrix = head_pose_manager.process_frame(frame)
                     if calibrated_matrix is not None:
                         last_calibrated_matrix = calibrated_matrix
