@@ -2,12 +2,14 @@ name: FocusMonitoring
 channels:
   - conda-forge
 dependencies:
-  - numpy
+  - numpy=1.26.4
   - scipy
   - opencv
-  - streamlit
-  - watchdog
+  - streamlit=1.41.1
+  - watchdog=6.0.0
   - python=3.12
   - pip
   - pip:
-      - mediapipe
+      - mediapipe==0.10.20
+      - opencv-python==4.10.0.84
+      - PyOpenGL==3.1.7
