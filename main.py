@@ -46,6 +46,9 @@ def setup():
 def main():
     setup()
     st.title("Head Pose Estimation with Zone Tracking")
+    cam, _ = st.columns([1,10])
+    cam.camera_input("test")
+
 
     camera_manager: CameraManager = st.session_state.camera_manager
     head_pose_manager: HeadPoseManager = st.session_state.head_pose_manager
