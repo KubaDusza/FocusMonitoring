@@ -145,7 +145,6 @@ def main():
                     plot_placeholder.pyplot(fig)
                     plt.close(fig)
 
-                # Komunikat o strefie
                 if head_pose_manager.is_looking_within_zone():
                     frame_placeholder.success("Looking inside the defined zone!")
                 else:
