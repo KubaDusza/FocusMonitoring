@@ -24,7 +24,7 @@ class HeadPoseVisualizer:
         from scipy.spatial.transform import Rotation as R
         self.visualization_rotation = R.from_euler('xyz', euler_angles_degrees, degrees=True).as_matrix()
 
-    def plot_head_pose(self, calibrated_rotation_matrix, recorded_directions, zone_threshold):
+    def plot_head_pose(self, calibrated_rotation_matrix, recorded_directions, zone_threshold, placeholder):
         """
         Plot the head pose, recorded directions, and cones.
 
@@ -32,7 +32,7 @@ class HeadPoseVisualizer:
             calibrated_rotation_matrix: Current calibrated head pose rotation matrix.
             recorded_directions: List of rotation matrices for recorded directions.
             zone_threshold: Threshold angle (in radians) for the cones.
-            plot_placeholder: If provided, the figure will be plotted there (e.g., in Streamlit).
+            placeholder: If provided, the figure will be plotted there (e.g., in Streamlit).
         """
 
         calibrated_rotation_matrix = self.visualization_rotation @ calibrated_rotation_matrix
@@ -50,7 +50,8 @@ class HeadPoseVisualizer:
         # Set plot limits and labels
         self._set_plot_bounds(ax)
 
-        return fig
+        if placeholder:
+            placeholder.pyplot(fig)
 
     def _draw_head(self, ax, rotation_matrix):
         """

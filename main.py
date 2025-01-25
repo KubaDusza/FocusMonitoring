@@ -137,13 +137,12 @@ def main():
                     and last_calibrated_matrix is not None
                     and frame_count % PLOT_SKIP == 0
                 ):
-                    fig = visualizer.plot_head_pose(
+                    visualizer.plot_head_pose(
                         last_calibrated_matrix,
                         head_pose_manager.get_calibrated_recorded_directions(),
                         head_pose_manager.zone_threshold,
+                        plot_placeholder
                     )
-                    plot_placeholder.pyplot(fig)
-                    plt.close(fig)
 
                 if head_pose_manager.is_looking_within_zone():
                     frame_placeholder.success("Looking inside the defined zone!")
