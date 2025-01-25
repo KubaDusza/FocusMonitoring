@@ -50,7 +50,9 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
         return self.get_head_pose()
 
     def print_landmark_visibilities(self):
-        """Print the visibility of the selected landmarks for debugging."""
+        """
+        Print the visibility of selected facial landmarks for debugging purposes.
+        """
         landmark_indices = [1, 152, 33, 263, 61, 291]
         print("Landmark Visibilities:")
 
@@ -62,16 +64,20 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
             print("No landmarks detected.")
 
     def _solve_head_pose(self, frame: np.ndarray) -> None:
-        """SolvePnP to calculate head pose."""
-        # Define 3D model points corresponding to the selected landmarks
+        """
+        SolvePnP to calculate head pose based on 2D and 3D landmark mappings.
+
+        Args:
+            frame (np.ndarray): The input video frame used for landmark calculations.
+        """
         model_points = np.array(
             [
                 [0.0, 0.0, 0.0],  # Nose tip
                 [0.0, -330.0, -65.0],  # Chin
                 [-225.0, 170.0, -135.0],  # Left eye left corner
                 [225.0, 170.0, -135.0],  # Right eye right corner
-                [-150.0, -150.0, -125.0],  # Left Mouth corner
-                [150.0, -150.0, -125.0],  # Right Mouth corner
+                [-150.0, -150.0, -125.0],  # Left mouth corner
+                [150.0, -150.0, -125.0],  # Right mouth corner
                 [-300.0, 0.0, -150.0],  # Left cheek
                 [300.0, 0.0, -150.0],  # Right cheek
             ]
@@ -130,7 +136,6 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
             dtype="double",
         )
 
-        # SolvePnP to estimate head pose
         success, self.rotation_vector, self.translation_vector = cv2.solvePnP(
             model_points, self.keypoints_2d, camera_matrix, None
         )
@@ -139,7 +144,14 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
             print("Head pose estimation failed.")
 
     def draw(self, frame: np.ndarray) -> np.ndarray:
-        """Draw face mesh and head pose axes on the frame."""
+        """
+        Draw face mesh and head pose axes on the provided frame.
+
+        Args:
+            frame (np.ndarray): The input frame to be drawn upon.
+        Returns:
+            np.ndarray: The modified frame with face mesh and head pose axes.
+        """
         if self.landmarks:
             self.drawing_utils.draw_landmarks(
                 frame,
@@ -178,7 +190,12 @@ class MediaPipeHeadPoseEstimator(BaseHeadPoseEstimator):
         return frame
 
     def get_head_pose(self) -> dict:
-        """Return rotation and translation vectors."""
+        """
+        Retrieve the head pose as rotation and translation vectors.
+
+        Returns:
+            dict: Contains 'rotation_vector' and 'translation_vector'.
+        """
         if self.rotation_vector is None:
             return {"rotation_vector": None, "translation_vector": None}
 

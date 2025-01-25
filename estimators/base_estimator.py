@@ -23,7 +23,7 @@ class BaseEstimator(ABC):
         Args:
             frame (np.ndarray): Input video frame.
         Returns:
-            dict: Contains keypoints and calculated pose information.
+            dict: Rotation and translation vectors.
         """
         pass
 

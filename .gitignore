@@ -7,3 +7,4 @@ average_gaze_duration.png
 .idea
 /heatmap.png
 /requirements.txt
+/print_code_structure.py

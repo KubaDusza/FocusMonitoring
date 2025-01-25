@@ -1,16 +1,15 @@
 import streamlit as st
-from core.camera_manager import CameraManager
-from estimators.mediapipe_head_pose_estimator import MediaPipeHeadPoseEstimator
-from managers.head_pose_manager import HeadPoseManager
-import numpy as np
-import cv2
 import matplotlib.pyplot as plt
-from scipy.spatial.transform import Rotation as R
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
+
+from managers.camera_manager import CameraManager
+from managers.head_pose_manager import HeadPoseManager
+
+from estimators.mediapipe_head_pose_estimator import MediaPipeHeadPoseEstimator
+
 from visualizer.head_pose_visualizer import HeadPoseVisualizer
+
 from observers.heatmap_generator import HeatmapGenerator
 from observers.graph_generator import GraphGenerator
-import time
 
 
 def setup():
@@ -46,8 +45,6 @@ def setup():
 def main():
     setup()
     st.title("Head Pose Estimation with Zone Tracking")
-    cam, _ = st.columns([1,10])
-    cam.camera_input("test")
 
 
     camera_manager: CameraManager = st.session_state.camera_manager

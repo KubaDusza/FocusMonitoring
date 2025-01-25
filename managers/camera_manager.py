@@ -2,7 +2,7 @@ import cv2
 
 
 class CameraManager:
-    """A flexible camera manager to handle multiple cameras and video feeds."""
+    """camera manager to handle multiple cameras and video feeds."""
 
     MAX_CAMERA_COUNT = 2  # Maximum number of cameras to scan for
 
