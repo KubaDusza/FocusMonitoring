@@ -92,6 +92,30 @@ Implements head pose estimation using MediaPipe's Face Mesh module.
 **Design Pattern**: Abstract Base Class for Observer pattern  
 Defines the `update(data: dict)` method to receive notifications from subjects.
 
+### **'Subject' (Abstract Class)**
+
+**Design Pattern**: Subject in the Observer pattern  
+The `Subject` class serves as a base for managing observers and notifying them of updates. It provides mechanisms to register, remove, and notify observers.
+
+- **`__init__()`**:  
+  Initializes an empty list of observers.
+
+- **`add_observer(observer: Observer)`**:  
+  Adds an observer to the list.  
+  **Args**:  
+  - `observer` (Observer): An instance of a class implementing the `Observer` interface.
+
+- **`remove_observer(observer: Observer)`**:  
+  Removes an observer from the list.  
+  **Args**:  
+  - `observer` (Observer): The observer to be removed.
+
+- **`notify_observers(data: dict)`**:  
+  Notifies all registered observers by calling their `update()` method and passing the `data`.  
+  **Args**:  
+  - `data` (dict): The data to be passed to the observers, typically containing state updates such as rotation vectors or zone adherence status.
+
+
 ### **`HeatmapGenerator`**
 **Design Pattern**: Observer  
 Generates heatmaps of looking directions based on the rotation vector.
