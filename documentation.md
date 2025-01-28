@@ -92,7 +92,7 @@ Implements head pose estimation using MediaPipe's Face Mesh module.
 **Design Pattern**: Abstract Base Class for Observer pattern  
 Defines the `update(data: dict)` method to receive notifications from subjects.
 
-### **'Subject' (Abstract Class)**
+### **`Subject` (Abstract Class)**
 
 **Design Pattern**: Subject in the Observer pattern  
 The `Subject` class serves as a base for managing observers and notifying them of updates. It provides mechanisms to register, remove, and notify observers.
